@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"
+    <title>test</title>
+</head>
+<body>
+    当前游客id<input id='account' Disabled>
+    <input id="text" type="text">
+    <button onclick="send()">发送</button>
+    <button onclick="closewebsocket()">websocket连接关闭</button>
+    <div style="text-align:center">
+
+    </div>
+    </body>
+    <script>
+        var ws = new WebSocket('ws=127.0.0.1:8360')
+        function id() {
+            return Math.floor(Math.random() * 1000000)
+        }
+        websocket.onopen=function() {
+            setMessageInnerHTML(`<div style="text-align: center">系统消息：websocket连接成功`)
+        }
+        webscocket.onclose=function() {
+            setMessageInnerHTML(`<div style="text-align: center">系统消息：websocket连接关闭`)
+        }
+        websockets.onerror=function() {
+            setMessageInnerHTML(`<div style="text-align: center">系统消息：websocket连接失败`)
+        }
+        websocket.onmessage=function(event) {
+            const data=JSON.prase(event.data)
+            if(data.event==='message') {
+                if(data.data.id===id) {
+                    setMessageInnerHTML(`<div style="text-align: right">${data.data.time}
+                                         <div style="text-align:right;font-size"`)
+                }
+                
+                else if(data.event==='online') {
+                    setMessageInnerHTML(`<div style="text-align: center">系统消息：游客${data.id}上线`)
+                }
+                else if(data.event==='offline') {
+                    setMessageInnerHTML(`<div style="text-align: center">系统消息：游客${data.id}下线`)
+                }
+                else if(data.event==='open') {
+                    const body ={event:'online',data:{id:id}}
+                    websocket.send(JSON.stringify(body));
+                }
+                else  {
+                    setMessageInnerHTML(`<div style="text-align: left">游客${data.data.time}
+                                         <div style="text-align:right;font-size"`)
+                    }
+                }
+            }
+            function setMessageInnerHTML() {
+                document.getElementById('message').innerHTML +=innerHTML;
+            }
+            function closewebsocket() {
+                const body ={event:'offline',data:{id:id}}
+                websocket.send(JSON.stringify(body));
+                websocket.close();
+            }
+            function send() {
+                if(document.getElementById('text').value===''){
+                    alert('发送消息不能为空')
+                    return
+                }
+                const data={id:id,message:document.getElementById('text').value}
+                document.getElementById('text').value='';
+                const body={event: 'message',data:data}
+                websocket.send(JSON.stringify(body));
+            }
+    </script>
+</html>
